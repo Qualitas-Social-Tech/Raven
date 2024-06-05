@@ -1,5 +1,6 @@
 import { useCurrentEditor } from '@tiptap/react'
-import { BiAt, BiHash, BiSmile, BiPaperclip, BiSolidSend } from 'react-icons/bi'
+import { BiAt, BiHash, BiSmile, BiPaperclip, BiSolidSend,  } from 'react-icons/bi'
+import { BsSlashSquare } from 'react-icons/bs'
 import { DEFAULT_BUTTON_STYLE, ICON_PROPS } from './ToolPanel'
 import { ToolbarFileProps } from './Tiptap'
 import { Flex, IconButton, Inset, Popover, Separator } from '@radix-ui/themes'
@@ -8,7 +9,8 @@ import { Suspense, lazy } from 'react'
 import { CreatePoll } from '../../polls/CreatePoll'
 import { HiOutlineGif } from "react-icons/hi2";
 import { GIFPicker } from '@/components/common/GIFPicker/GIFPicker'
-
+import { commandMenuOpenAtom } from '../../CommandMenu/CommandMenu'
+import { useAtom } from 'jotai'
 
 const EmojiPicker = lazy(() => import('@/components/common/EmojiPicker/EmojiPicker'))
 
@@ -26,6 +28,7 @@ type RightToolbarButtonsProps = {
  * 4. Emoji picker
  * 5. File upload
  * 6. Send button
+ * 7. Commands
  * @param props
  * @returns
  */
@@ -41,6 +44,7 @@ export const RightToolbarButtons = ({ fileProps, ...sendProps }: RightToolbarBut
                 <GIFPickerButton />
                 {fileProps && <FilePickerButton fileProps={fileProps} />}
                 <SendButton {...sendProps} />
+                <CommandButton />
             </Flex>
         </Flex>
     )
@@ -172,6 +176,29 @@ const FilePickerButton = ({ fileProps }: { fileProps: ToolbarFileProps }) => {
     </IconButton>
 }
 
+const [, setOpen] = useAtom(commandMenuOpenAtom)
+
+const CommandButton = () => {
+    const { editor } = useCurrentEditor()
+    const commandButtonClicked = () => {
+        if (editor) {
+            editor.chain().focus().insertContent('/').run(); 
+            setOpen(true);
+        }
+        
+    }
+
+    return <IconButton
+        size='1'
+        onClick={commandButtonClicked}
+        variant='ghost'
+        className={DEFAULT_BUTTON_STYLE}
+        disabled={editor?.isEditable === false}
+        title='Commands'
+        aria-label={"commands"}>
+        <BsSlashSquare {...ICON_PROPS} />
+    </IconButton>
+}
 
 const SendButton = ({ sendMessage, messageSending, setContent }: {
     sendMessage: RightToolbarButtonsProps['sendMessage'],
@@ -181,10 +208,7 @@ const SendButton = ({ sendMessage, messageSending, setContent }: {
     const { editor } = useCurrentEditor()
     const onClick = () => {
         if (editor) {
-
-
             const hasContent = editor.getText().trim().length > 0
-
             const hasInlineImage = editor.getHTML().includes('img')
 
             let html = ''
