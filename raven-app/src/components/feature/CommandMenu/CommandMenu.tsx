@@ -41,10 +41,13 @@ const CommandMenu = () => {
                         placeholder='Search or type a command' />
                     <Command.List>
                         <Command.Empty>No results found.</Command.Empty>
-                        <ChannelList />
-                        <UserList />
-
-                        {/* TODO: Make these commands work
+                        {
+                            /*
+                            <ChannelList />
+                            <UserList />
+                            */
+                        }
+                        { //TODO: Make these commands work
                         <Command.Group heading="Commands">
                             <Command.Item>
                                 <BiSearch size={ICON_SIZE}/>
@@ -70,7 +73,8 @@ const CommandMenu = () => {
                                 <BiCog size={ICON_SIZE} />
                                 Settings
                             </Command.Item>
-                        </Command.Group> */}
+                        </Command.Group> 
+                        }
 
                         {/* <ArchivedChannelList /> */}
                     </Command.List>
